@@ -6,10 +6,19 @@ import os
 import random
 import string
 from datetime import datetime
+import uuid
+from flask_cors import CORS
+
+# Конфигурация базы данных для продакшена
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///valentine.db')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+CORS(app)
+
+# Конфигурация
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24))
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-limit
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -181,4 +190,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
