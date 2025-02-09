@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffccd5;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: linear-gradient(45deg, #ffccd5 25%, #ffd8e3 25%, #ffd8e3 50%, #ffccd5 50%, #ffccd5 75%, #ffd8e3 75%, #ffd8e3 100%);
+            background-size: 56.57px 56.57px;
+            animation: gradient-move 3s linear infinite;
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .username {
+            cursor: pointer;
+            color: #ff69b4;
+            text-decoration: underline;
+        }
+
+        .user-id {
+            cursor: pointer;
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .popup {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+            min-width: 200px;
+        }
+
+        .popup-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .valentines-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8787);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .valentines-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #ff8787, #ffa8a8);
+        }
+
+        .id-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .popup.show {
+            display: block;
+        }
+
+        .copied-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1002;
+        }
+
+        .logout-btn {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff1493;
+        }
+
+        @keyframes gradient-move {
+            0% { background-position: 0 0; }
+            100% { background-position: 56.57px 0; }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #d6336c;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: 2px solid #ffccd5;
+            border-radius: 10px;
+            width: 250px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #d6336c;
+        }
+
+        button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #ff1493;
+        }
+
+        .emoji-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .emoji {
+            position: absolute;
+            animation: fall linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(45deg, #ff6b6b, #ff8787);
+            color: white;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #ff8787, #ffa8a8);
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #ff8787, #ffa8a8);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            margin-top: 80px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .send-valentine-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px auto;
+            transition: transform 0.3s ease;
+        }
+
+        .send-valentine-form:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff4b6e;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffd1dc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff4b6e;
+            box-shadow: 0 0 0 3px rgba(255, 75, 110, 0.1);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #ff8fa3, #ffc2d1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #ff7a93, #ffadc1);
+        }
+
+        .file-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .file-size-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #ff4b6e, #ff758c);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #ff3d63, #ff6481);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .flash-messages {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span class="username" onclick="togglePopup()">{{ username }}</span>
+        <div class="popup" id="idPopup">
+            <div class="popup-content">
+                <div>
+                    <div class="id-label">Ваш ID:</div>
+                    <span class="user-id" onclick="copyToClipboard('{{ user_id }}')">{{ user_id }}</span>
+                </div>
+                <a href="{{ url_for('received_valentines') }}" class="valentines-btn">Валентинки</a>
+            </div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Выйти</a>
+    </div>
+    <div class="copied-message" id="copiedMessage">ID скопировано!</div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="tabs">
+        <button class="tab {% if active_tab == 'create' %}active{% endif %}" onclick="window.location.href='{{ url_for('valentine', tab='create') }}'">Создать страничку любви</button>
+        <button class="tab {% if active_tab == 'send' %}active{% endif %}" onclick="window.location.href='{{ url_for('valentine', tab='send') }}'">Отправить валентинку</button>
+    </div>
+
+    <div class="tab-content {% if active_tab == 'create' %}active{% endif %}" id="create-tab">
+        <div class="container">
+            <h1>С днем святого Валентина! ❤️</h1>
+            <img src="/static/softie-egirl.gif" alt="Valentine GIF" style="max-width: 200px; margin: 20px 0;">
+            <div class="input-container">
+                <input type="text" id="nameInput" placeholder="Введите имя любимого человека">
+                <button onclick="createLovePage()">Создать страничку любви</button>
+            </div>
+        </div>
+        <div class="emoji-container" id="emojiContainer"></div>
+    </div>
+
+    <div class="tab-content {% if active_tab == 'send' %}active{% endif %}" id="send-tab">
+        <div class="send-valentine-form">
+            <form action="{{ url_for('send_valentine') }}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="recipient_id">ID получателя</label>
+                    <input type="text" id="recipient_id" name="recipient_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Ваше сообщение</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="file-upload-label" for="image">
+                        <i class="fas fa-upload"></i> Выберите изображение
+                    </label>
+                    <input type="file" id="image" name="image" accept="image/*" onchange="updateFileName(this)">
+                    <div class="file-name" id="fileName"></div>
+                    <div class="file-size-info">Максимальный размер файла: 8 МБ</div>
+                </div>
+                <button type="submit" class="submit-btn">Отправить валентинку</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePopup() {
+            const popup = document.getElementById('idPopup');
+            popup.classList.toggle('show');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const message = document.getElementById('copiedMessage');
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        // Закрываем popup при клике вне его
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('idPopup');
+            const username = document.querySelector('.username');
+            if (!popup.contains(e.target) && !username.contains(e.target)) {
+                popup.classList.remove('show');
+            }
+        });
+
+        function getRandomEmoji() {
+            const emojis = [
+                '/static/emoji1.jpg',
+                '/static/emoji2.jpg',
+                '/static/emoji3.jpg',
+                '/static/emoji4.jpg',
+                '/static/emoji5.jpg',
+                '/static/emoji6.jpg',
+                '/static/emoji7.jpg',
+                '/static/emoji8.jpg'
+            ];
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function createEmoji() {
+            const emoji = document.createElement('img');
+            emoji.src = getRandomEmoji();
+            emoji.classList.add('emoji');
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.animationDuration = Math.random() * 3 + 2 + 's';
+            emoji.style.width = '30px';  
+            emoji.style.height = '30px';  
+            document.getElementById('emojiContainer').appendChild(emoji);
+
+            emoji.addEventListener('animationend', () => {
+                emoji.remove();
+            });
+        }
+
+        function startEmojiRain() {
+            const emojiContainer = document.getElementById('emojiContainer');
+            emojiContainer.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(createEmoji, i * 300);
+            }
+
+            setInterval(() => {
+                if (document.getElementById('emojiContainer').children.length < 30) {
+                    createEmoji();
+                }
+            }, 300);
+        }
+
+        function createLovePage() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (!name) {
+                alert('Пожалуйста, введите имя!');
+                return;
+            }
+
+            const heartEmoji = '❤️';
+            const specialNames = ["Гае4ка", "Гаечка", "Gae4ka", "Gaechka", "Кае4ка", "Каечка", "Kae4ka", "Kaechka"];
+            const isSpecialName = specialNames.includes(name);
+
+            const messages = isSpecialName ? 
+                Array(5).fill("ERM") : 
+                [
+                    `Ты важный для меня человек, ${name}`,
+                    `Ты живёшь в моем сердце ❤️ ${name} ❤️`,
+                    `${name}, ты делаешь меня счастливым`,
+                    `Я благодарен судьбе за тебя, ${name}`,
+                    `${name}, ты моё солнышко`,
+                    `С тобой всё обретает смысл, ${name}`,
+                    `${name}, ты мой самый любимый человек`,
+                    `Ты моя радость, ${name}`,
+                    `${name}, ты моё вдохновение`,
+                    `Я так сильно тебя люблю, ${name}`
+                ];
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            const selectedMessages = isSpecialName ? 
+                messages : 
+                shuffleArray([...messages]).slice(0, 5);
+
+            let lovePageHTML = `
+                <!DOCTYPE html>
+                <html lang="ru">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Для тебя, ${name} ${heartEmoji}</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            background-color: #ffccd5;
+                            margin: 0;
+                            padding: 50px;
+                            min-height: 100vh;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            background-image: linear-gradient(45deg, #ffccd5 25%, #ffd8e3 25%, #ffd8e3 50%, #ffccd5 50%, #ffccd5 75%, #ffd8e3 75%, #ffd8e3 100%);
+                            background-size: 56.57px 56.57px;
+                            animation: gradient-move 3s linear infinite;
+                        }
+                        @keyframes gradient-move {
+                            0% { background-position: 0 0; }
+                            100% { background-position: 56.57px 0; }
+                        }
+                        .message-container {
+                            background-color: rgba(255, 255, 255, 0.9);
+                            padding: 40px;
+                            border-radius: 20px;
+                            backdrop-filter: blur(5px);
+                            max-width: 600px;
+                            margin: 0 auto;
+                            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                            transform-style: preserve-3d;
+                            perspective: 1000px;
+                            position: relative;
+                        }
+                        .subtle-message {
+                            position: absolute;
+                            top: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            color: rgba(214, 51, 108, 0.15);
+                            font-size: 18px;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            white-space: nowrap;
+                            font-family: 'Courier New', monospace;
+                        }
+                        h1 {
+                            color: #d6336c;
+                            margin-bottom: 30px;
+                            font-size: 32px;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+                        }
+                        .message {
+                            font-size: 22px;
+                            color: #a61e4d;
+                            margin: 25px 0;
+                            line-height: 1.6;
+                            letter-spacing: 0.5px;
+                            animation: fadeIn 1s ease-in;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 10px;
+                            padding: 15px;
+                            border-radius: 10px;
+                            background-color: rgba(255, 255, 255, 0.5);
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                            transition: transform 0.3s ease;
+                            cursor: pointer;
+                        }
+                        .message:not(.footer-message) {
+                            cursor: pointer;
+                        }
+                        .message:not(.footer-message):hover {
+                            transform: translateY(-5px) rotateX(5deg);
+                            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+                            background-color: rgba(255, 255, 255, 0.7);
+                        }
+                        .footer-message {
+                            cursor: default;
+                        }
+                        .emoji-img {
+                            vertical-align: middle;
+                            width: 28px;
+                            height: 28px;
+                            animation: pulse 1.5s infinite;
+                        }
+                        @keyframes pulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.2); }
+                            100% { transform: scale(1); }
+                        }
+                        .footer-message {
+                            margin-top: 40px;
+                            font-style: italic;
+                            color: #d6336c;
+                            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="message-container">
+                        <div class="subtle-message">fuck february 14 i love u everyday</div>
+                        <h1>Для тебя, ${name} ${heartEmoji}</h1>
+                        ${selectedMessages.map((message, index) => {
+                            if (isSpecialName) {
+                                return `<p class="message" style="animation-delay: ${index * 0.3}s" onclick="window.open('../static/exceptgaechka.jpg', '_blank')">${message}</p>`;
+                            } else {
+                                const messageIndex = messages.indexOf(message);
+                                return `<p class="message" style="animation-delay: ${index * 0.3}s" onclick="window.open('../static/${messageIndex + 1}.jpg', '_blank')">${message}</p>`;
+                            }
+                        }).join('')}
+                        <p class="message footer-message" style="animation-delay: 1.5s">
+                            Этот сайт исчезнет через 30 минут, но моя любовь к тебе — никогда! ${heartEmoji}
+                        </p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            let loveWindow = window.open("", "_blank");
+            loveWindow.document.write(lovePageHTML);
+
+            setTimeout(() => {
+                loveWindow.close();
+            }, 30 * 60 * 1000);
+        }
+
+        function updateFileName(input) {
+            const fileName = input.files[0] ? input.files[0].name : '';
+            document.getElementById('fileName').textContent = fileName;
+        }
+
+        document.addEventListener('DOMContentLoaded', startEmojiRain);
+        window.addEventListener('resize', startEmojiRain);
+
+        document.getElementById('nameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createLovePage();
+            }
+        });
+    </script>
+</body>
+</html>
